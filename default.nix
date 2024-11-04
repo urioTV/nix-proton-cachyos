@@ -17,9 +17,9 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ zstd ];
 
   installPhase = ''
-    mkdir -p $out/share/steam/compatibilitytools.d
     tar -I zstd -xf $src
-    cp -r usr/share/steam/compatibilitytools.d/proton-cachyos $out/share/steam/compatibilitytools.d/
+    mkdir -p $out/share/steam/compatibilitytools.d
+    mv usr/share/steam/compatibilitytools.d/proton-cachyos $out/share/steam/compatibilitytools.d/
   '';
 
   meta = with lib; {
