@@ -1,25 +1,21 @@
 {
+  description = "Proton CachyOS build";
+
   inputs = {
-    nix-proton-cachyos-git = {
-      url = "git+http://192.168.0.124:5000/tooe/nix-proton-cachyos-git.git";
-    };
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = { self, nixpkgs, nix-proton-cachyos-git, ... }@inputs:
+  outputs = { self, nixpkgs }:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      protonCachyosVersions = builtins.fromJSON (builtins.readFile ./versions.json);
     in {
-      packages = forAllSystems (system:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-          };
-        in
-        {
-          myPackage = pkgs.callPackage ./default.nix {};
-          protonCachyos = nix-proton-cachyos-git.packages.${system}.proton-cachyos;
-        }
-      );
+      packages.${system} = {
+        default = self.packages.${system}.proton-cachyos;
+        proton-cachyos = pkgs.callPackage ./default.nix {
+          inherit protonCachyosVersions;
+        };
+      };
     };
 }
