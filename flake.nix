@@ -12,10 +12,10 @@
       protonCachyosVersions = builtins.fromJSON (builtins.readFile ./versions.json);
     in {
       packages.${system} = {
-        default = self.packages.${system}.proton-cachyos;
         proton-cachyos = pkgs.callPackage ./default.nix {
           inherit protonCachyosVersions;
         };
+        default = self.packages.${system}.proton-cachyos;
       };
     };
 }
