@@ -19,6 +19,9 @@ jobs:
       - name: Check for Updates
         id: check
         run: |
+          # Store current version info
+          OLD_CONTENT=$(cat versions.json)
+
           # Get latest version from mirror
           LATEST=$(curl -s 'https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/' | grep -Po 'proton-cachyos-1:\d+\.\d+\.\d+-\d+-x86_64_v3\.pkg\.tar\.zst' | sort -V | tail -n1)
           BASE=$(echo $LATEST | grep -Po '(?<=:)\d+\.\d+(?=\.)')
@@ -32,19 +35,34 @@ jobs:
           HASH=$(nix hash file --base64 --type sha256 "$TEMP_FILE")
           rm "$TEMP_FILE"
 
-          # Update versions.json
-          cat > versions.json <<EOF
+          # Create new versions.json content
+          NEW_CONTENT=$(cat <<EOF
           {
             "base": "$BASE",
             "release": "$RELEASE",
             "hash": "sha256-$HASH"
           }
           EOF
+          )
+
+          # Compare old and new content
+          if [ "$OLD_CONTENT" = "$NEW_CONTENT" ]; then
+            echo "No updates available"
+            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
+          else
+            echo "$NEW_CONTENT" > versions.json
+            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+          fi
 
       - name: Create Pull Request
+        if: env.UPDATE_NEEDED == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: 'proton-cachyos: update to latest version'
           title: 'Update proton-cachyos'
+          body: |
+            Updated proton-cachyos to latest version from CachyOS mirror.
+
+            This PR was created automatically by the update workflow.
           branch: update-proton-cachyos
           delete-branch: true
