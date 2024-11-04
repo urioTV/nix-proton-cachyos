@@ -27,6 +27,6 @@ stdenv.mkDerivation {
     homepage = "https://github.com/CachyOS/proton-cachyos";
     license = licenses.bsd3;
     platforms = [ "x86_64-linux" ];
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ kimjongbing ];
   };
 }
