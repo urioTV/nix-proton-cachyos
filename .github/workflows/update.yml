@@ -24,16 +24,20 @@ jobs:
           BASE=$(echo $LATEST | grep -Po '(?<=:)\d+\.\d+(?=\.)')
           RELEASE=$(echo $LATEST | grep -Po '\d+(?=-\d+-x86_64)')
 
-          # Get the hash
-          URL="https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/$LATEST"
-          HASH=$(nix-prefetch-url $URL)
+          # Download file to temporary location with safe name
+          TEMP_FILE=$(mktemp)
+          curl -L "https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/$LATEST" -o "$TEMP_FILE"
+
+          # Get hash of the downloaded file
+          HASH=$(nix hash file --base64 --type sha256 "$TEMP_FILE")
+          rm "$TEMP_FILE"
 
           # Update versions.json
           cat > versions.json <<EOF
           {
             "base": "$BASE",
             "release": "$RELEASE",
-            "hash": "sha256-$(echo $HASH | base64)"
+            "hash": "sha256-$HASH"
           }
           EOF
 
