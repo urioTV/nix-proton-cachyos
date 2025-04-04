@@ -1,5 +1,9 @@
 # Nix Proton CachyOS
 
+It's a fork of kimjongbing repo. I only provided a working Github API Token and changed url definition in package derivation.
+I hope it will work and I'll try my best to maintain it.
+
+
 A Nix flake for [CachyOS Proton](https://github.com/CachyOS/proton-cachyos), a compatibility tool for Steam Play based on Wine with additional patches and optimizations from CachyOS.
 
 > **Disclaimer**: This is an unofficial, community-maintained Nix package. It is not affiliated with, officially connected to, or endorsed by Valve Corporation, CachyOS, or any of their subsidiaries or affiliates. The names Proton, CachyOS, and any related names are trademarks of their respective owners.
@@ -11,7 +15,7 @@ Add to your NixOS configuration:
 ```nix
 {
   inputs = {
-    nix-proton-cachyos.url = "github:kimjongbing/nix-proton-cachyos";
+    nix-proton-cachyos.url = "github:urioTV/nix-proton-cachyos";
   };
 }
 ```
